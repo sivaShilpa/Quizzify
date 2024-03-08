@@ -4,7 +4,7 @@ import sys
 import json
 sys.path.append(os.path.abspath('../../'))
 from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
+from Quizzify.tasks.task_4.task_4 import EmbeddingClient
 from tasks.task_5.task_5 import ChromaCollectionCreator
 from tasks.task_8.task_8 import QuizGenerator
 

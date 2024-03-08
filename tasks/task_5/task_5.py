@@ -3,7 +3,7 @@ import os
 import streamlit as st
 sys.path.append(os.path.abspath('../../'))
 from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
+from Quizzify.tasks.task_4.task_4 import EmbeddingClient
 
 
 # Import Task libraries

@@ -1,5 +1,5 @@
 # embedding_client.py
-
+import streamlit as st
 from langchain_google_vertexai import VertexAIEmbeddings
 
 class EmbeddingClient:
@@ -64,7 +64,7 @@ class EmbeddingClient:
 
 if __name__ == "__main__":
     model_name = "textembedding-gecko@003"
-    project = "YOUR PROJECT ID HERE"
+    project = "quizzify-415816"
     location = "us-central1"
 
     embedding_client = EmbeddingClient(model_name, project, location)
@@ -72,3 +72,4 @@ if __name__ == "__main__":
     if vectors:
         print(vectors)
         print("Successfully used the embedding client!")
+        st.write(vectors)
