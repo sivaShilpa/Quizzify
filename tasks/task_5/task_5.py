@@ -1,15 +1,16 @@
 import sys
 import os
 import streamlit as st
-sys.path.append(os.path.abspath('../../'))
-from tasks.task_3.task_3 import DocumentProcessor
-from Quizzify.tasks.task_4.task_4 import EmbeddingClient
-
+sys.path.append(os.path.abspath('/root/RadicalX/missions/Quizzify/Quizzify/tasks'))
+from task_3.task_3 import DocumentProcessor
+from task_4.task_4 import EmbeddingClient
 
 # Import Task libraries
 from langchain_core.documents import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import Chroma
+# from chromadb import Chroma
+
 
 class ChromaCollectionCreator:
     def __init__(self, processor, embed_model):
@@ -56,8 +57,9 @@ class ChromaCollectionCreator:
         # Step 2: Split documents into text chunks
         # Use a TextSplitter from Langchain to split the documents into smaller text chunks
         # https://python.langchain.com/docs/modules/data_connection/document_transformers/character_text_splitter
-        # [Your code here for splitting documents]
-        
+        text_splitter = CharacterTextSplitter(separator='\n', chunk_size=500, chunk_overlap=100)
+        texts = text_splitter.split_documents(self.processor.pages)
+              
         if texts is not None:
             st.success(f"Successfully split pages to {len(texts)} documents!", icon="✅")
 
@@ -65,11 +67,16 @@ class ChromaCollectionCreator:
         # https://docs.trychroma.com/
         # Create a Chroma in-memory client using the text chunks and the embeddings model
         # [Your code here for creating Chroma collection]
-        
-        if self.db:
-            st.success("Successfully created Chroma Collection!", icon="✅")
+        if texts:
+            self.db = Chroma.from_documents(texts, self.embed_model)
+            
+            if self.db:
+                st.success("Successfully created Chroma Collection!", icon="✅")
+            else:
+                st.error("Failed to create Chroma Collection!", icon="🚨")
         else:
-            st.error("Failed to create Chroma Collection!", icon="🚨")
+            st.error("No texts available for Chroma Collection!", icon="🚨")
+
     
     def query_chroma_collection(self, query) -> Document:
         """
@@ -93,7 +100,7 @@ if __name__ == "__main__":
     
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "YOUR PROJECT ID HERE",
+        "project": "quizzify-415816",
         "location": "us-central1"
     }
     
@@ -107,3 +114,5 @@ if __name__ == "__main__":
         submitted = st.form_submit_button("Submit")
         if submitted:
             chroma_creator.create_chroma_collection()
+
+

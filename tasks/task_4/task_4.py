@@ -1,6 +1,7 @@
 # embedding_client.py
 import streamlit as st
 from langchain_google_vertexai import VertexAIEmbeddings
+# from pydantic_settings import BaseSettings
 
 class EmbeddingClient:
     """
@@ -30,14 +31,16 @@ class EmbeddingClient:
     """
     
     def __init__(self, model_name, project, location):
+        try:
         # Initialize the VertexAIEmbeddings client with the given parameters
-        # Read about the VertexAIEmbeddings wrapper from Langchain here
-        # https://python.langchain.com/docs/integrations/text_embedding/google_generative_ai
-        self.client = VertexAIEmbeddings(
-            model_name=model_name,
-            project=project,
-            location=location
+            self.client = VertexAIEmbeddings(
+                model_name=model_name,
+                project=project,
+                location=location
         )
+        except Exception as e:
+            print(f"Error initializing the client: {e}")
+            self.client = None  # Set to None to indicate a failure
         
     def embed_query(self, query):
         """
@@ -46,8 +49,12 @@ class EmbeddingClient:
         :param query: The text query to embed.
         :return: The embeddings for the query or None if the operation fails.
         """
-        vectors = self.client.embed_query(query)
-        return vectors
+        try:
+            vectors = self.client.embed_query(query)
+            return vectors
+        except Exception as e:
+            print(f"Error embedding query: {e}")
+            return None
     
     def embed_documents(self, documents):
         """
@@ -58,8 +65,11 @@ class EmbeddingClient:
         """
         try:
             return self.client.embed_documents(documents)
-        except AttributeError:
-            print("Method embed_documents not defined for the client.")
+        except AttributeError as e:
+            print(f"Method embed_documents not defined for the client: {e}")
+            return None
+        except Exception as e:
+            print(f"Error embedding documents: {e}")
             return None
 
 if __name__ == "__main__":
@@ -70,6 +80,7 @@ if __name__ == "__main__":
     embedding_client = EmbeddingClient(model_name, project, location)
     vectors = embedding_client.embed_query("Hello World!")
     if vectors:
-        print(vectors)
-        print("Successfully used the embedding client!")
         st.write(vectors)
+        st.success("Successfully used the embedding client!")
+    else:
+        st.error("Failed to use the embedding client.")
